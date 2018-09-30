@@ -1,15 +1,53 @@
-bin/
-target/
-build/
-lib/
-jit/
-*.ser
-*.gz
-*.jar
-*.lua
-*.out
-*.tar
-*.txt
-*.zip
-docs
-*.0
+# Eclipse stuff
+.classpath
+.project
+.settings/
+
+# netbeans
+nbproject
+
+# maven
+/*/target/
+/*/out/
+
+# gradle
+.gradle/
+
+# vim
+.*.sw[a-p]
+.sw[a-p]
+
+# various other potential build files
+/*/build/
+/buildassets/map_*.txt
+/*/bin/
+/*/dist/
+/*/manifest.mf
+/release
+/out
+/build/
+/logs/
+/*/logs/
+
+# Mac filesystem dust
+.DS_Store
+
+# Windows filesystem dust
+Thumbs.db
+
+# intellij
+.idea/*
+*.iml
+*.ipr
+*.iws
+.idea/*
+/atlassian-ide-plugin.xml
+/*/out/
+
+# intellij allowance
+!.idea/codeStyleSettings.xml
+!.idea/codeStyles/
+!.idea/inspectionProfiles/
+!.idea/copyright/
+!.idea/runConfigurations/
+
