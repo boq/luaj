@@ -123,6 +123,7 @@ public class ScriptEngineTests extends TestSuite  {
 		protected Bindings b;
 		abstract protected Bindings createBindings();
 		protected void setUp() throws Exception {
+			System.setProperty("line.separator", "\n");
 	       	this.e = new ScriptEngineManager().getEngineByName("luaj");
 			this.b = createBindings();
 		}

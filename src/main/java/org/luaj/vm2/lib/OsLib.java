@@ -240,7 +240,8 @@ public class OsLib extends TwoArgFunction {
 	public String date(String format, double time) {
 		Calendar d = Calendar.getInstance();
 		d.setTime(new Date((long)(time*1000)));
-		if (format.startsWith("!")) {
+		boolean isUtc = format.startsWith("!");
+		if (isUtc) {
 			time -= timeZoneOffset(d);
 			d.setTime(new Date((long)(time*1000)));
 			format = format.substring(1);
@@ -330,7 +331,7 @@ public class OsLib extends TwoArgFunction {
 					result.append(String.valueOf(d.get(Calendar.YEAR)));
 					break;
 				case 'z': {
-					final int tzo = timeZoneOffset(d) / 60;
+					final int tzo = isUtc ? 0 : timeZoneOffset(d) / 60;
 					final int a = Math.abs(tzo);
 					final String h = String.valueOf(100 + a / 60).substring(1);
 					final String m = String.valueOf(100 + a % 60).substring(1);

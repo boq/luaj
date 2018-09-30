@@ -11,7 +11,7 @@ end
 local somenumber = {1,0.75,'-1','-0.25'}
 local somepositive = {1,0.75,'2', '2.5'}
 local notanumber = {nil,astring,aboolean,afunction,atable,athread}
-local nonnumber = {astring,aboolean,afunction,atable}
+local nonnumber = {astring,aboolean,afunction,atable,athread}
 
 local singleargfunctions = { 
 		'abs', 'acos', 'asin', 'atan', 'cos', 'cosh', 'deg', 'exp', 'floor',
@@ -23,11 +23,11 @@ local singleargposdomain = {
 	}
 		
 local twoargfunctions = { 
-		'atan2', 
+--		'atan2', -- now functionally same as atan
 	}
 	
 local twoargsposdomain = { 
-	'pow', 'fmod', 
+	'pow', 'fmod'
 }
 
 -- single argument tests
@@ -57,6 +57,14 @@ for i,v in ipairs(twoargfunctions) do
 	checkallerrors(funcname,{somenumber},'bad argument')
 	checkallerrors(funcname,{somenumber,notanumber},'bad argument')
 end
+
+banner('math.atan2')
+checkallpass('math.atan2',{somenumber,somenumber})
+checkallpass('math.atan2',{somenumber})
+checkallerrors('math.atan2',{},'bad argument')
+checkallerrors('math.atan2',{notanumber},'bad argument')
+checkallerrors('math.atan2',{notanumber,somenumber},'bad argument')
+checkallerrors('math.atan2',{somenumber,nonnumber},'bad argument')
 
 -- two-argument, positive domain tests
 for i,v in ipairs(twoargsposdomain) do

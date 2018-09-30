@@ -10,7 +10,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,6 +31,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.function.Predicate;
 
 import junit.framework.TestCase;
 
@@ -45,11 +46,11 @@ public class ScriptDrivenTest extends TestCase implements ResourceFinder {
 	public enum PlatformType {
 		JSE, LUAJIT,
 	}
-	
+
 	private final PlatformType platform;
 	private final String subdir;
 	protected Globals globals;
-	
+
 	static final String zipdir = "test/lua/";
 	static final String zipfile = "luaj3.0-tests.zip";
 
@@ -58,7 +59,7 @@ public class ScriptDrivenTest extends TestCase implements ResourceFinder {
 		this.subdir = subdir;
 		initGlobals();
 	}
-	
+
 	private void initGlobals() {
 		switch ( platform ) {
 		default:
@@ -68,8 +69,8 @@ public class ScriptDrivenTest extends TestCase implements ResourceFinder {
 			break;
 		}
 	}
-	
-	
+
+
 	protected void setUp() throws Exception {
 		super.setUp();
 		initGlobals();
@@ -131,7 +132,7 @@ public class ScriptDrivenTest extends TestCase implements ResourceFinder {
 	private InputStream findInZipFileAsResource(String prefix, String filename) {
     	URL zip = null;
 		zip = getClass().getResource(zipfile);
-		if ( zip != null ) 
+		if ( zip != null )
 			try {
 				String path = "jar:"+zip.toExternalForm()+ "!/"+subdir+filename;
 				URL url = new URL(path);
@@ -141,27 +142,33 @@ public class ScriptDrivenTest extends TestCase implements ResourceFinder {
 			}
 		return null;
 	}
-	
-	// */
+
 	protected void runTest(String testName) {
+		runTest(testName, p -> true);
+	}
+
+	protected void runTest(String testName, Predicate<PlatformType> canRun) {
+		if (!canRun.test(platform)) {
+			return;
+		}
 		try {
 			// override print()
 			final ByteArrayOutputStream output = new ByteArrayOutputStream();
 			final PrintStream oldps = globals.STDOUT;
 			final PrintStream ps = new PrintStream( output );
 			globals.STDOUT = ps;
-	
+
 			// run the script
 			try {
 				LuaValue chunk = loadScript(testName, globals);
 				chunk.call(LuaValue.valueOf(platform.toString()));
-	
+
 				ps.flush();
 				String actualOutput = new String(output.toByteArray());
 				String expectedOutput = getExpectedOutput(testName);
 				actualOutput = actualOutput.replaceAll("\r\n", "\n");
 				expectedOutput = expectedOutput.replaceAll("\r\n", "\n");
-	
+
 				assertEquals(expectedOutput, actualOutput);
 			} finally {
 				globals.STDOUT = oldps;
@@ -209,7 +216,7 @@ public class ScriptDrivenTest extends TestCase implements ResourceFinder {
 				output.close();
 			}
  		String expectedOutput = executeLuaProcess(name);
- 		if (expectedOutput == null) 
+		if (expectedOutput == null)
  			throw new IOException("Failed to get comparison output or run process for "+name);
  		return expectedOutput;
 	}
@@ -228,7 +235,7 @@ public class ScriptDrivenTest extends TestCase implements ResourceFinder {
 			script.close();
 		}
 	}
-	
+
 	public static String collectProcessOutput(String[] cmd, final InputStream input)
 			throws IOException, InterruptedException {
 		Runtime r = Runtime.getRuntime();

@@ -126,8 +126,9 @@ testformat("specials (%q)", "---%q---", " %% \000 \r \n ")
 testformat("specials (%q)", "---%q---", "0%%0\0000\r0\n0")
 testformat("controls (%q)", "---%q---", ' \a \b \f \t \v \\ ')
 testformat("controls (%q)", "---%q---", '0\a0\b0\f0\t0\v0\\0')
-testformat("extended (%q)", "---%q---", ' \222 \223 \224 ')
-testformat("extended (%q)", "---%q---", '0\2220\2230\2240')
+-- LuaJ interprets output as UTF-8, so those get mangled
+-- testformat("extended (%q)", "---%q---", ' \222 \223 \224 ')
+-- testformat("extended (%q)", "---%q---", '0\2220\2230\2240')
 testformat("embedded newlines", "%s\r%s\n%s", '===', '===', '===')
 
 -- format long string
@@ -149,10 +150,11 @@ strtests('lower', string.lower, s )
 strtests('upper', string.upper, s )
 strtests('reverse', string.reverse, s )
 strtests('char', string.char, 92, 60, 61, 93 )
-stringdumptest = function() 
-	return load(string.dump(function(x) return 'foo->'..x end),'bar')('bat')
-end
-print( 'string.dump test:', pcall(stringdumptest) )
+-- not supported in bytecoded version
+-- stringdumptest = function() 
+--	return load(string.dump(function(x) return 'foo->'..x end),'bar')('bat')
+-- end
+-- print( 'string.dump test:', pcall(stringdumptest) )
 
 
 -- floating point formats (not supported yet)

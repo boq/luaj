@@ -219,19 +219,24 @@ public class BaseLib extends TwoArgFunction implements ResourceFinder {
 	final class pcall extends VarArgFunction {
 		public Varargs invoke(Varargs args) {
 			LuaValue func = args.checkvalue(1);
-			if (globals != null && globals.debuglib != null)
-				globals.debuglib.onCall(this);
+			final LuaValue prevError = globals.running.setErrorFunc(null);
 			try {
-				return varargsOf(TRUE, func.invoke(args.subargs(2)));
-			} catch ( LuaError le ) {
-				final LuaValue m = le.getMessageObject();
-				return varargsOf(FALSE, m!=null? m: NIL);
-			} catch ( Exception e ) {
-				final String m = e.getMessage();
-				return varargsOf(FALSE, valueOf(m!=null? m: e.toString()));
-			} finally {
 				if (globals != null && globals.debuglib != null)
-					globals.debuglib.onReturn();
+					globals.debuglib.onCall(this);
+				try {
+					return varargsOf(TRUE, func.invoke(args.subargs(2)));
+				} catch (LuaError le) {
+					final LuaValue m = le.getMessageObject();
+					return varargsOf(FALSE, m != null ? m : NIL);
+				} catch (Exception e) {
+					final String m = e.getMessage();
+					return varargsOf(FALSE, valueOf(m != null ? m : e.toString()));
+				} finally {
+					if (globals != null && globals.debuglib != null)
+						globals.debuglib.onReturn();
+				}
+			} finally {
+				globals.running.setErrorFunc(prevError);
 			}
 		}
 	}
@@ -245,7 +250,7 @@ public class BaseLib extends TwoArgFunction implements ResourceFinder {
 		public Varargs invoke(Varargs args) {
 			LuaValue tostring = globals.get("tostring"); 
 			for ( int i=1, n=args.narg(); i<=n; i++ ) {
-				if ( i>1 ) globals.STDOUT.print( " \t" );
+				if ( i>1 ) globals.STDOUT.print( "\t" );
 				LuaString s = tostring.call( args.arg(i) ).strvalue();
 				globals.STDOUT.print(s.tojstring());
 			}
@@ -368,9 +373,7 @@ public class BaseLib extends TwoArgFunction implements ResourceFinder {
 	// "xpcall", // (f, err) -> result1, ...				
 	final class xpcall extends VarArgFunction {
 		public Varargs invoke(Varargs args) {
-			final LuaThread t = globals.running;
-			final LuaValue preverror = t.errorfunc;
-			t.errorfunc = args.checkvalue(2);
+			final LuaValue preverror = globals.running.setErrorFunc(args.checkvalue(2));
 			try {
 				if (globals != null && globals.debuglib != null)
 					globals.debuglib.onCall(this);
@@ -387,7 +390,7 @@ public class BaseLib extends TwoArgFunction implements ResourceFinder {
 						globals.debuglib.onReturn();
 				}
 			} finally {
-				t.errorfunc = preverror;
+				globals.running.setErrorFunc(preverror);
 			}
 		}
 	}
@@ -461,14 +464,22 @@ public class BaseLib extends TwoArgFunction implements ResourceFinder {
 		final LuaValue func;
 		byte[] bytes; 
 		int offset, remaining = 0;
+		boolean finished = false;
+
 		StringInputStream(LuaValue func) {
 			this.func = func;
 		}
 		public int read() throws IOException {
+			if (finished) {
+				return -1;
+			}
+
 			if ( remaining <= 0 ) {
 				LuaValue s = func.call();
-				if ( s.isnil() )
+				if ( s.isnil() || (s.isstring() && s.length() == 0)) {
+					finished = true;
 					return -1;
+				}
 				LuaString ls = s.strvalue();
 				bytes = ls.m_bytes;
 				offset = ls.m_offset;

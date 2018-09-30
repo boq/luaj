@@ -1,43 +1,25 @@
 package org.luaj.vm2.compiler;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import junit.framework.TestCase;
-
 import org.luaj.vm2.Globals;
-import org.luaj.vm2.LoadState;
 import org.luaj.vm2.Print;
 import org.luaj.vm2.Prototype;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+
 abstract public class AbstractUnitTests extends TestCase {
 
     private final String dir;
-    private final String jar;
     private Globals globals;
 
-    public AbstractUnitTests(String zipdir, String zipfile, String dir) {
-    	URL zip = null;
-		zip = getClass().getResource(zipfile);
-		if ( zip == null ) {
-	    	File file = new File(zipdir+"/"+zipfile);
-			try {
-		    	if ( file.exists() )
-					zip = file.toURI().toURL();
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			}
-		}
-		if ( zip == null )
-			throw new RuntimeException("not found: "+zipfile);
-		this.jar = "jar:" + zip.toExternalForm()+ "!/";
+    public AbstractUnitTests(String dir) {
         this.dir = dir;
     }
 
@@ -47,12 +29,11 @@ abstract public class AbstractUnitTests extends TestCase {
     }
 
     protected String pathOfFile(String file) {
-        return jar + dir + "/" + file;
+        return dir + "/" + file;
     }
     
     protected InputStream inputStreamOfPath(String path) throws IOException {
-        URL url = new URL(path);
-        return url.openStream();
+        return new FileInputStream(new File(path));
     }
     
     protected InputStream inputStreamOfFile(String file) throws IOException {

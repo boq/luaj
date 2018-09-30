@@ -10,12 +10,12 @@ checkallerrors('require',{{anumber}},'not found')
 checkallerrors('require',{{anil,aboolean,afunction,atable}},'bad argument')
 
 -- package.loadlib
-banner('package.loadlib')
-checkallpass('package.loadlib',{{'foo'},{'bar'}},true)
-checkallerrors('package.loadlib',{notastring},'bad argument')
+-- [NOT SUPPORTED] banner('package.loadlib')
+-- checkallpass('package.loadlib',{{'foo'},{'bar'}},true)
+-- checkallerrors('package.loadlib',{notastring},'bad argument')
 
--- package.seeall
-banner('package.seeall')
-checkallpass('package.seeall',{sometable})
-checkallerrors('package.seeall',{notatable},'bad argument')
+-- [REMOVED] package.seeall
+-- banner('package.seeall')
+-- checkallpass('package.seeall',{sometable})
+-- checkallerrors('package.seeall',{notatable},'bad argument')
 

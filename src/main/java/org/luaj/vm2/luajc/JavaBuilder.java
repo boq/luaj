@@ -21,11 +21,6 @@
 ******************************************************************************/
 package org.luaj.vm2.luajc;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.AASTORE;
 import org.apache.bcel.generic.ALOAD;
@@ -53,6 +48,7 @@ import org.apache.bcel.generic.Type;
 import org.luaj.vm2.Buffer;
 import org.luaj.vm2.Lua;
 import org.luaj.vm2.LuaBoolean;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaInteger;
 import org.luaj.vm2.LuaNumber;
 import org.luaj.vm2.LuaString;
@@ -66,6 +62,11 @@ import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.ZeroArgFunction;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 public class JavaBuilder {
 	
 	private static final String STR_VARARGS = Varargs.class.getName();
@@ -77,6 +78,7 @@ public class JavaBuilder {
 	private static final String STR_LUATABLE = LuaTable.class.getName();
 	private static final String STR_BUFFER = Buffer.class.getName();
 	private static final String STR_STRING = String.class.getName();
+	private static final String STR_ERROR = LuaError.class.getName();
 	private static final String STR_JSEPLATFORM = "org.luaj.vm2.lib.jse.JsePlatform";
 
 	private static final ObjectType TYPE_VARARGS = new ObjectType(STR_VARARGS);
@@ -88,6 +90,7 @@ public class JavaBuilder {
 	private static final ObjectType TYPE_LUATABLE = new ObjectType(STR_LUATABLE);
 	private static final ObjectType TYPE_BUFFER = new ObjectType(STR_BUFFER);
 	private static final ObjectType TYPE_STRING = new ObjectType(STR_STRING);
+	private static final ObjectType TYPE_ERROR = new ObjectType(STR_ERROR);
 	
 	private static final ArrayType TYPE_LOCALUPVALUE = new ArrayType( TYPE_LUAVALUE, 1 );
 	private static final ArrayType TYPE_CHARARRAY = new ArrayType( Type.CHAR, 1 );

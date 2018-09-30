@@ -234,7 +234,7 @@ public class LuaDouble extends LuaNumber {
 			return JSTR_NAN;
 		if ( Double.isInfinite(v) ) 
 			return (v<0? JSTR_NEGINF: JSTR_POSINF);
-		return Float.toString((float)v);
+		return Double.toString(v);
 	}
 	
 	public LuaString strvalue() {

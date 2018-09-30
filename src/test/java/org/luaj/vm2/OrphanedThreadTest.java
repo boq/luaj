@@ -87,6 +87,22 @@ public class OrphanedThreadTest extends TestCase {
 		function = globals.load(script, "script");
 		doTest(LuaValue.TRUE, LuaValue.ZERO);
 	}
+
+	public void testCollectOrphanedXpcallClosureThread() throws Exception {
+		String script =
+				"f = function(x)\n" +
+						"  print('in pcall-closure, arg is '..(x))\n" +
+						"  arg = coroutine.yield(1)\n" +
+						"  print('in pcall-closure.2, arg is '..arg)\n" +
+						"  arg = coroutine.yield(0)\n" +
+						"  print('leakage in pcall-closure.3, arg is '..arg)\n" +
+						"  return 'done'\n" +
+						"end\n" +
+						"function e() return 0 end\n" +
+						"print( 'pcall-closre.result:', xpcall( f, e, ... ) )\n";
+		function = globals.load(script, "script");
+		doTest(LuaValue.TRUE, LuaValue.ZERO);
+	}
 	
 	public void testCollectOrphanedLoadCloasureThread() throws Exception {
 		String script =
@@ -124,7 +140,7 @@ public class OrphanedThreadTest extends TestCase {
 		
 		// gc
 		for (int i=0; i<100 && (luathr_ref.get() != null || func_ref.get() != null); i++) {
-			Runtime.getRuntime().gc();
+			System.gc();
 			Thread.sleep(5);
 		}
 		

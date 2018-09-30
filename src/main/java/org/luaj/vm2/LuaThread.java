@@ -156,6 +156,12 @@ public class LuaThread extends LuaValue {
 		return this.state.function == null;
 	}
 
+	public LuaValue setErrorFunc(final LuaValue errorfunc) {
+		final LuaValue tmp = this.errorfunc;
+		this.errorfunc = errorfunc;
+		return tmp;
+	}
+
 	public Varargs resume(Varargs args) {
 		final LuaThread.State s = this.state;
 		if (s.status > LuaThread.STATUS_SUSPENDED)

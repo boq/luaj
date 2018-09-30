@@ -236,6 +236,8 @@ public class StringLib extends TwoArgFunction {
 	 * except as arguments to the q option. 
 	 */
 	static final class format extends VarArgFunction {
+		private final LibFunction toString = new BaseLib.tostring();
+
 		@Override
 		public Varargs invoke(Varargs args) {
 			LuaString fmt = args.checkstring( 1 );
@@ -286,7 +288,7 @@ public class StringLib extends TwoArgFunction {
 								addquoted( result, args.checkstring( arg ) );
 								break;
 							case 's': {
-								LuaString s = args.checkstring( arg );
+								LuaString s = toString.call(args.arg( arg )).checkstring();
 								if ( fdsc.precision == -1 && s.length() >= 100 ) {
 									result.append( s );
 								} else {

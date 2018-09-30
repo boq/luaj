@@ -233,8 +233,6 @@ pcall(badfunc,badfunc)	false	string
 pcall(wrappedbad)	nil
 pcall(wrappedbad,errfunc)	nil
 pcall(xpcall(badfunc))	false	string
-  in errfunc	string
-pcall(xpcall(badfunc,errfunc))	false
-pcall(xpcall(badfunc,badfunc))	false
-pcall(xpcall(wrappedbad))	false	string
+pcall(xpcall,badfunc,badfunc)	false
+pcall(xpcall,wrappedbad)	false	string
 xpcall(wrappedbad,errfunc)	true

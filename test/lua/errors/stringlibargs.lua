@@ -26,13 +26,13 @@ checkallerrors('string_char',{{nil,-1,256,3}},'bad argument')
 checkallerrors('string_char',{notanumber,{23,'45',6.7}},'bad argument')
 checkallerrors('string_char',{{23,'45',6.7},nonnumber},'bad argument')
 
--- string.dump
-banner('string.dump')
-local someupval = 435
-local function funcwithupvals() return someupval end
-checkallpass('string.dump',{{function() return 123 end}})
-checkallpass('string.dump',{{funcwithupvals}})
-checkallerrors('string.dump',{notafunction},'bad argument')
+-- [NOT SUPPORTED] string.dump
+-- banner('string.dump')
+-- local someupval = 435
+-- local function funcwithupvals() return someupval end
+-- checkallpass('string.dump',{{function() return 123 end}})
+-- checkallpass('string.dump',{{funcwithupvals}})
+-- checkallerrors('string.dump',{notafunction},'bad argument')
 
 -- string.find
 banner('string.find')
@@ -46,14 +46,18 @@ checkallerrors('string.find',{somestring,somestring,nonnumber},'bad argument')
 -- string.format
 --local numfmts = {'%c','%d','%E','%e','%f','%g','%G','%i','%o','%u','%X','%x'}
 local numfmts = {'%c','%d','%i','%o','%u','%X','%x'}
-local strfmts = {'%q','%s'}
+local strictstrfmts = {'%q'}
+local strfmts = {'%s'}
 local badfmts = {'%w'}
+local tostrings = { nil, astring, anumber, aboolean }
 banner('string.format')
 checkallpass('string.format',{somestring,anylua})
 checkallpass('string.format',{numfmts,somenumber})
-checkallpass('string.format',{strfmts,somestring})
+checkallpass('string.format',{strictstrfmts,somestring})
+checkallpass('string.format',{strfmts,tostrings})
+checkallpass('string.format',{strfmts,notastring}, true)
 checkallerrors('string.format',{numfmts,notanumber},'bad argument')
-checkallerrors('string.format',{strfmts,notastring},'bad argument')
+checkallerrors('string.format',{strictstrfmts,notastring}, 'bad argument')
 checkallerrors('string.format',{badfmts,somestring},"invalid option '%w'")
 
 -- string.gmatch

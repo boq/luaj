@@ -13,7 +13,7 @@ checkallerrors('assert',{{nil,false,n=2},{'message'}},'message')
 banner('collectgarbage')
 checkallpass('collectgarbage',{{'collect','count'}},true)
 checkallerrors('collectgarbage',{{astring, anumber}},'bad argument')
-checkallerrors('collectgarbage',{{aboolean, atable, afunction, athread}},'string expected')
+checkallerrors('collectgarbage',{{aboolean, atable, afunction, athread}},'bad argument')
 
 -- dofile
 banner('dofile')
@@ -56,7 +56,8 @@ banner('load')
 checkallpass('load', {{'return'}})
 checkallpass('load', {{'return'},{'mychunk'}})
 checkallpass('load', {{'return a ... b'},{'mychunk'}},true)
-checkallerrors('load', {notastring,{nil,astring,anumber,n=3}}, 'bad argument')
+checkallpass('load', {somefunction})
+checkallerrors('load', {{ nil, aboolean, atable, athread }, notastring}, 'bad argument')
 checkallerrors('load', {{'return'},{afunction,atable}}, 'bad argument')
 
 -- next
@@ -118,7 +119,7 @@ checkallerrors('setmetatable',{sometable,nontable},'bad argument')
 -- tonumber
 banner('tonumber')
 checkallpass('tonumber',{somenumber,{nil,2,10,36,n=4}})
-checkallpass('tonumber',{notanil,{nil,10,n=2}})
+checkallerrors('tonumber',{{nil,aboolean,atable,afunction,athread},{10}},'bad argument')
 checkallerrors('tonumber',{{nil,afunction,atable,n=3},{2,9,11,36}},'bad argument')
 checkallerrors('tonumber',{somenumber,{1,37,atable,afunction,aboolean}},'bad argument')
 
@@ -138,8 +139,9 @@ checkallerrors('type',{},'bad argument')
 
 -- xpcall
 banner('xpcall')
+checkallpass('xpcall', {somefunction,somefunction})
 checkallpass('xpcall', {notanil,nonfunction})
-checkallpass('xpcall', {notanil,{function(...)return 'aaa', 'bbb', #{...} end}})
+checkallpass('xpcall', {notafunction,{function(...)return 'aaa', 'bbb', #{...} end}})
 checkallerrors('xpcall',{anylua},'bad argument')
 
 
